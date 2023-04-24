@@ -1,0 +1,57 @@
+<%-- any content can be specified here e.g.: --%>
+<%@ page pageEncoding="UTF-8" %>
+<% 
+
+ if(application.getAttribute("users") == null){
+    application.setAttribute("users", new java.util.ArrayList());  
+}
+ java.util.ArrayList<String> users = (java.util.ArrayList) application.getAttribute("users");   
+
+if(request.getParameter("session-login") != null){
+    session.setAttribute("name", request.getParameter("session-name"));
+    users.add((String) session.getAttribute("name"));
+    response.sendRedirect(request.getRequestURI());
+}else if(request.getParameter("session-logout") != null){
+    int i = users.indexOf((String) session.getAttribute("name"));
+    session.removeAttribute("name");
+    if(i >= 0) users.remove(i);
+    response.sendRedirect(request.getRequestURI());
+}
+
+String userName = (String) session.getAttribute("name");
+
+%>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/index.jsp">
+            <i class="bi bi-people-fill"></i> 
+                SessionApp
+        </a>
+            <button class="navbar-toggier" type="button" data-ba-toggle="collapse" data-ba-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-1g-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="${pageContext.request.contextPath}/index.jsp">Início</a>
+                </li>
+                <li class="navitem">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/users.jsp">Users</a>
+                </li>
+            </ul>
+                <%if(userName!=null) {%>
+                <form class="d-flex">
+                    <span class="navbar-text me-2">
+                        Olá, <%= userName %>
+                    </span>
+                    <button class="btn btn-outline-success" type="submit" name="session-logout">Sair</button>
+                </form>
+    <%}%>
+        </div>
+    </div>  
+</nav>
+    <%if(userName == null){ %>
+<div class="m-2">
+    <%@include file="login-form.jspf" %>
+</div>
+<%}%>
